@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>Panel · Ikea Import</title>
+<style>
+body{margin:0;background:#121810;color:#e8eee2;font:16px/1.4 system-ui,-apple-system,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;background:#3d5a2a;padding:12px 16px}
+h1{margin:0;font-size:20px}main{padding:12px;max-width:1100px;margin:0 auto}
+#lg{max-width:340px;margin:60px auto;padding:0 16px}
+input{width:100%;box-sizing:border-box;padding:12px;margin:6px 0;border:1px solid #2b3826;border-radius:10px;background:#1b2418;color:#e8eee2;font:16px system-ui}
+button{border:0;border-radius:10px;padding:12px 16px;background:#8fb36f;color:#10160b;font:inherit;font-weight:700;cursor:pointer}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.c{background:#1b2418;border:2px solid #2b3826;border-radius:12px;padding:12px}
+.c.nuevo{border-color:#f0b429}.c.preparando{border-color:#4ea8de}.c.listo{border-color:#8fb36f}
+.c h3{margin:0 0 2px}.m{color:#98a590;font-size:14px}
+.c ul{margin:8px 0;padding-left:18px}.n{background:#2b3826;border-radius:8px;padding:6px 8px;margin:6px 0}
+.c button{width:100%;margin-top:8px}.e{color:#ff8a80;min-height:20px}
+</style></head><body>
+<header><h1>Pedidos · Ikea Import</h1><button id="out" style="display:none">Salir</button></header>
+<div id="lg"><h2>Entrar</h2><input id="em" type="email" placeholder="Correo" autocomplete="username"><input id="pw" type="password" placeholder="Contraseña" autocomplete="current-password"><div class="e" id="er"></div><button id="in" style="width:100%">Entrar</button></div>
+<main id="mn" style="display:none"><p class="m" id="vc"></p><div class="g" id="ls"></div></main>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import{getFirestore,collection,query,orderBy,limit,onSnapshot,doc,updateDoc}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyCJ21gGWUQcuBCUe2nYCCOVoQzM3i0u3nk",authDomain:"ikea-import.firebaseapp.com",projectId:"ikea-import",storageBucket:"ikea-import.firebasestorage.app",messagingSenderId:"71448129440",appId:"1:71448129440:web:34df25354b91d0cf3efec5"}),auth=getAuth(app),db=getFirestore(app);
+const $=s=>document.querySelector(s),E=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),f=n=>"$"+Number(n).toFixed(2);
+const SIG={nuevo:["preparando","Empezar a preparar"],preparando:["listo","Marcar como listo"],listo:["entregado","Entregado"]};
+let ctx,first=true,unsub;
+const beep=()=>{try{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=880;g.gain.setValueAtTime(.3,ctx.currentTime);o.start();o.stop(ctx.currentTime+.5);navigator.vibrate&&navigator.vibrate(300)}catch(e){}};
+$("#in").onclick=async()=>{try{ctx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}$("#er").textContent="";
+try{await signInWithEmailAndPassword(auth,$("#em").value.trim(),$("#pw").value)}catch(e){$("#er").textContent="Correo o contraseña incorrectos."}};
+$("#out").onclick=()=>signOut(auth);
+onAuthStateChanged(auth,u=>{unsub&&unsub();$("#lg").style.display=u?"none":"";$("#mn").style.display=$("#out").style.display=u?"":"none";if(!u)return;first=true;
+unsub=onSnapshot(query(collection(db,"pedidos"),orderBy("creado","desc"),limit(100)),s=>{
+if(!first&&s.docChanges().some(c=>c.type=="added"))beep();first=false;
+const rows=s.docs.filter(d=>d.data().estado!="entregado");$("#vc").textContent=rows.length?rows.length+" pedido(s) activo(s)":"No hay pedidos activos.";
+$("#ls").innerHTML=rows.map(d=>{const p=d.data(),t=p.creado?.toDate?.().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})||"",sg=SIG[p.estado];
+return`<div class="c ${E(p.estado)}"><h3>${E(p.nombre)}</h3><div class="m">${t} · ${E(p.telefono)}${p.hora?" · Recoge: "+E(p.hora):""}</div><ul>${(p.lineas||[]).map(l=>`<li>${E(l.cantidad)} × ${E(l.producto)}</li>`).join("")}</ul>${p.notas?`<div class="n">${E(p.notas)}</div>`:""}<b>${f(p.total)} + IVA</b>${sg?`<button data-i="${d.id}" data-s="${sg[0]}">${sg[1]}</button>`:""}</div>`}).join("")});
+});
+$("#ls").onclick=e=>{const b=e.target.closest("[data-i]");if(b)updateDoc(doc(db,"pedidos",b.dataset.i),{estado:b.dataset.s})};
+</script></body></html>
