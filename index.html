@@ -1,0 +1,189 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Ikea Import · Haz tu pedido</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f5ec;--card:#fff;--ink:#1f2b1a;--mut:#62705a;--g:#3d5a2a;--line:#dce4d2;--on:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#121810;--card:#1b2418;--ink:#e8eee2;--mut:#98a590;--g:#8fb36f;--line:#2b3826;--on:#10160b}}
+:root[data-theme=dark]{--bg:#121810;--card:#1b2418;--ink:#e8eee2;--mut:#98a590;--g:#8fb36f;--line:#2b3826;--on:#10160b}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 56px);height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h2{font-family:Oswald,"Arial Narrow",Impact,sans-serif;font-weight:500;margin:0}
+header{background:var(--g);color:var(--on);padding:20px 16px 14px}
+h1{font-size:34px;letter-spacing:.01em}header p{margin:2px 0 0;opacity:.85}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:8px;overflow-x:auto;padding:10px 12px;border-bottom:1px solid var(--line)}
+nav a{white-space:nowrap;padding:6px 13px;border:1px solid var(--line);border-radius:99px;color:var(--ink);text-decoration:none;background:var(--card)}
+main{max-width:720px;margin:0 auto;padding:0 12px 120px}
+.note{color:var(--mut);font-size:13px;margin:12px 2px 0}
+h2{font-size:28px;color:var(--g);margin:24px 0 8px}
+.it{display:flex;gap:10px;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.tx{min-width:0}.tx small{display:block;color:var(--mut);font-size:12.5px}
+.op{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;flex-shrink:0}
+.op button{position:relative;border:1px solid var(--g);background:none;color:var(--g);border-radius:8px;padding:7px 10px;font:inherit;font-weight:600;cursor:pointer}
+.op button.on{background:var(--g);color:var(--on)}
+.o{display:flex;gap:4px;align-items:center}.op .m{display:none;padding:7px 12px}.op .m.vis{display:block}
+.op i{font-style:normal;position:absolute;top:-8px;right:-6px;background:var(--ink);color:var(--bg);border-radius:99px;font-size:11px;min-width:18px;height:18px;line-height:18px;text-align:center}
+.op i:empty{display:none}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+#bar{display:none;position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:696px;margin:0 auto;z-index:10;justify-content:space-between;border:0;border-radius:14px;padding:15px 18px;background:var(--g);color:var(--on);font:inherit;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+#bar.show{display:flex}
+#sh{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;align-items:flex-end}#sh.show{display:flex}
+#pn{background:var(--bg);width:100%;max-width:720px;margin:0 auto;max-height:92%;overflow:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+.hd{display:flex;justify-content:space-between;align-items:center}.hd h2{margin:0}
+.x{border:0;background:none;color:var(--ink);font-size:26px;cursor:pointer}
+.ln{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}.ln>span:first-child{flex:1}.ln small{display:block;color:var(--mut)}
+.st{display:flex;align-items:center;gap:8px}.st button{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:17px;cursor:pointer}
+.tot{display:flex;justify-content:space-between;font-size:18px;font-weight:700;padding:12px 0 2px}
+label{display:block;font-weight:600;font-size:13px;margin-top:10px}
+input,textarea{width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:16px system-ui,sans-serif;margin:4px 0}
+.pri{width:100%;border:0;border-radius:12px;padding:14px;margin-top:14px;background:var(--g);color:var(--on);font:inherit;font-weight:700;cursor:pointer}
+.sec{background:none;border:1px solid var(--g);color:var(--g)}
+.err{color:#c0392b;font-size:13px;min-height:16px}
+</style></head><body>
+<header><h1>Ikea Import</h1><p>Elige lo que quieras y arma tu pedido</p></header>
+<nav id="nav"></nav>
+<main><p class="note">Los precios no incluyen IVA. Los cafés admiten extras (leche completa, canela, chantilly, bebida vegetal) con coste adicional: indícalo en las notas.</p><div id="menu"></div></main>
+<button id="bar"></button>
+<div id="sh"><div id="pn">
+<div id="frm"><div class="hd"><h2>Tu pedido</h2><button class="x" id="cl" aria-label="Cerrar">×</button></div>
+<div id="lines"></div><div class="tot"><span>Subtotal</span><span id="sub"></span></div><div class="note">Sin IVA.</div>
+<div id="fields"><label for="nm">Nombre</label><input id="nm" autocomplete="name">
+<label for="tl">Teléfono</label><input id="tl" type="tel" autocomplete="tel">
+<label for="hr">Hora de recogida</label><input id="hr" type="time">
+<label for="nt">Notas (arepa de maíz, yuca o plátano, sin cebolla, extras…)</label><textarea id="nt" rows="2"></textarea>
+<div class="err" id="er"></div><button class="pri" id="go">Enviar pedido</button></div></div>
+<div id="ok" style="display:none"></div>
+</div></div>
+<script>
+const D=`#Cafés
+Espresso|1.85/2.75|Café negro
+Americano|2.36/2.90|Espresso y agua
+Latte|3.20/3.85/6.50|Espresso con leche texturizada
+Latte Macchiatto Caramelo|4.15|Espresso, leche texturizada y caramelo
+Latte Vainilla|4.20|Espresso, leche texturizada y vainilla
+Cappuccino|3.36/4.04/6.83|Espresso doble con leche texturizada
+Macchiatto Espresso|2.66|Espresso con espuma de leche
+Mocaccino|4.41|Espresso, leche texturizada y base de chocolate
+Mocaccino Nutella|5.15|Espresso, leche texturizada y nutella
+Affogato|7.72|Espresso, helado de vainilla y caramelo
+Dalgona|4.41|Café instantáneo, leche y hielo
+Frapuccino Clásico|6.51|Espresso doble y helado de vainilla
+Frapuccino Caramelo / Nutella / Oreo / Vainilla|8.95|Espresso y helado de vainilla
+Café Pistacho|9.40|Espresso, leche, pistacho o nutella
+#Té e infusiones
+Infusiones (frías o calientes)|4.10|Frutos rojos, jamaica, hierbabuena, jengibre o manzanilla
+Té negro / Té verde|4.10|
+Infusión Tropical|4.83|Frutos rojos o jamaica, parchita, miel y hierbabuena
+Infusión la Cabaña|4.83|Miel de caña, jengibre y limón
+Infusión Primavera|4.83|Piña, manzana, especias, flor de jamaica y limón
+Matcha latte frío / caliente|5.90|Matcha ceremonial con leche texturizada
+#Jugos naturales
+Jugo de frutas naturales|5.04|Parchita, piña, lechosa o naranja
+Jugo de Mora|5.78|
+Jugo de Fresa|5.78|
+Jugo Mixto|5.78|Combinación de dos frutas a elegir
+Jugo 3 en 1|5.78|Naranja, remolacha y zanahoria
+Jugo Verde|5.78|Piña, celery, pepino y limón
+Limonada|3.85|
+Limonada con hierbabuena|4.10|
+#Bebidas
+Toddy frío|5.04|
+Toddy caliente|4.05|
+Chocolate caliente|4.83|
+Agua Minalba|2.20|
+Agua Nevada|1.90|
+Sparkling|2.84|Original, limón, toronja o naranja
+Coca-Cola / Coca-Cola Light|2.55|
+Malta|2.25|
+Agua fontana 750 ml|2.20|Refill
+Agua fontana 500 ml|1.80|Refill
+#Desayunos
+Trío de empanadas criollas|8.39|Carne mechada, molida, pollo, cazón o queso
+Trío de arepas dulces|7.90|Con anís y queso llanero
+Desayuno Criollo|12.50|Huevos, queso, caraotas, proteína a elegir y dos arepas
+Desayuno Keto|13.86|Huevo, tocineta, queso a la plancha, aguacate y mini arepas de yuca
+Dúos de arepas de yuca o plátano|9.95|Carne, pollo, queso blanco, cazón o huevos perico
+Dúos de arepas de maíz|9.02|Carne, pollo, queso blanco, cazón o huevos perico
+Desayuno Americano|13.20|Panquecas, huevo, rollitos de jamón y queso, tocineta y sirope
+Panquecas|8.69|Con frutas, sirope de maple o mermelada
+#Omelettes
+Omelette de jamón y queso mozzarella|9.66|Con arepas de maíz, yuca o plátano
+Omelette de jamón de pavo|9.98|Con arepas de maíz, yuca o plátano
+Omelette de vegetales|9.66|Con arepas de maíz, yuca o plátano
+Omelette de espinaca|9.35|Con arepas de maíz, yuca o plátano
+Omelette de champiñones|9.98|Con arepas de maíz, yuca o plátano
+#Ensaladas
+Ensalada César|13.86|Pollo asado, lechuga romana, crotones, tocineta, parmigiano
+Ensalada de Pera|15.00|Lechuga, peras asadas, pollo, queso de cabra, nueces, arándanos
+#Sándwiches y wraps
+Club House|14.60|Pollo, jamón, gouda, tocineta, huevo y papas fritas
+Sándwich Clásico|10.29|Queso gouda, jamón, lechuga, tomate y salsas
+Sándwich de lomo de cerdo|15.23|Focaccia, lomo al horno, gouda, mostaza y mayonesa
+Tostadas de salmón ahumado|15.23|Aguacate, cebolla morada, alcaparras y eneldo
+Sándwich de mortadela al pistacho|13.12|Focaccia, rúcula, tomate, mayo pesto y papas fritas
+Sándwich de prosciutto|14.60|Focaccia, grana padano, peras confitadas y papas fritas
+Wrap Mexicano|12.50|Carne molida o pollo, guacamole, gouda y papas fritas
+Wrap de Pollo Crispy|12.50|Aguacate, gouda, mayo curry y miel, con papas fritas
+Wrap César|12.50|Pollo asado, tocineta, parmesano y papas fritas
+#Hamburguesas
+Hamburguesa de Carne|14.85|Tocineta, cebolla caramelizada, queso y papas fritas
+Hamburguesa de Pollo Crispy|13.75|Gouda, salsa de la casa y papas fritas
+Hamburguesa César|13.75|Pollo crispy, aderezo César, parmesano y papas fritas
+Mini Hamburguesas|14.20|Tres minis de pollo o carne con queso y salsa
+#Snacks
+Tequeños|9.98|Ración de 6 con salsa tártara
+Tenders de pollo|13.42|Con salsa mostaza-miel y papas fritas
+#Postres
+Pie de Manzana|6.60|
+Pie de Limón|5.72|Con merengue suizo
+Brownie|8.10|Con chispas de chocolate amargo
+Copa Tres Leche|6.60|
+Tiramisú|6.60|
+Tiramisú de Pistacho|7.30|
+Tarta Vasca|8.90|Con mermeladas naturales
+Tarta Vasca Light (sin azúcar)|9.90|
+Cheesecake de Limón|9.90|
+Cheesecake de Manzanas|9.90|
+Cheesecake de Oreo|9.90|
+Cheesecake de Pistacho|9.90|
+Torta de Limón|5.90|
+Torta de Zanahoria|6.90|
+Torta de Chocolate|8.30|
+Torta de Naranja|5.30|
+Tarta Francesa de Manzana|7.90|
+Quesillo|4.73|Receta tradicional de la casa`;
+const C=[],L={2:["Peq.","Gde."],3:["Peq.","Med.","Gde."]},$=s=>document.querySelector(s),f=n=>"$"+n.toFixed(2);
+D.split("\n").forEach(l=>{if(l[0]=="#")C.push({t:l.slice(1),i:[]});else{const[a,b,c]=l.split("|");C.at(-1).i.push({n:a,p:b.split("/").map(Number),d:c||""})}});
+let cart={};try{cart=JSON.parse(localStorage.getItem("cart")||"{}")}catch(e){}
+$("#nav").innerHTML=C.map((c,x)=>`<a href="#s${x}">${c.t}</a>`).join("");
+$("#menu").innerHTML=C.map((c,x)=>`<section id="s${x}"><h2>${c.t}</h2>`+c.i.map((it,y)=>`<div class="it"><div class="tx"><b>${it.n}</b><small>${it.d}</small></div><div class="op">`+it.p.map((p,v)=>`<span class="o"><button class="m" data-m="${x}-${y}-${v}" aria-label="Quitar uno">−</button><button data-k="${x}-${y}-${v}">${it.p.length>1?L[it.p.length][v]+" ":""}${f(p)}<i></i></button></span>`).join("")+`</div></div>`).join("")+`</section>`).join("");
+const row=k=>{const[x,y,v]=k.split("-").map(Number),it=C[x].i[y];return{it,p:it.p[v],nm:it.n+(it.p.length>1?" ("+L[it.p.length][v]+")":"")}};
+function draw(){let n=0,t=0,h="";
+for(const k in cart){const q=cart[k];if(!(q>0)){delete cart[k];continue}const r=row(k);n+=q;t+=q*r.p;h+=`<div class="ln"><span>${r.nm}<small>${f(r.p)} c/u</small></span><span class="st"><button data-a="${k}" data-d="-1" aria-label="Quitar uno">−</button>${q}<button data-a="${k}" data-d="1" aria-label="Añadir uno">+</button></span><b>${f(q*r.p)}</b></div>`}
+document.querySelectorAll("[data-k]").forEach(b=>{const q=cart[b.dataset.k]||0;b.lastElementChild.textContent=q||"";b.classList.toggle("on",q>0)});
+document.querySelectorAll("[data-m]").forEach(b=>b.classList.toggle("vis",cart[b.dataset.m]>0));
+$("#lines").innerHTML=h||"<p class='note'>Tu pedido está vacío. Añade algo de la carta.</p>";$("#sub").textContent=f(t);$("#fields").style.display=n?"":"none";
+$("#bar").innerHTML=`<span>Ver pedido (${n})</span><span>${f(t)}</span>`;$("#bar").classList.toggle("show",n>0);
+try{localStorage.setItem("cart",JSON.stringify(cart))}catch(e){}return{n,t}}
+const add=(k,d)=>{cart[k]=(cart[k]||0)+d;draw()};
+$("#menu").onclick=e=>{const m=e.target.closest("[data-m]");if(m){add(m.dataset.m,-1);return}const b=e.target.closest("[data-k]");if(b)add(b.dataset.k,1)};
+$("#lines").onclick=e=>{const b=e.target.closest("[data-a]");if(b){add(b.dataset.a,+b.dataset.d);if(!draw().n)$("#sh").classList.remove("show")}};
+const show=v=>{$("#frm").style.display=v?"":"none";$("#ok").style.display=v?"none":""};
+$("#bar").onclick=()=>{show(1);$("#sh").classList.add("show")};
+$("#cl").onclick=()=>$("#sh").classList.remove("show");
+$("#sh").onclick=e=>{if(e.target.id=="sh")$("#sh").classList.remove("show")};
+function enviarPedido(o){throw new Error("sin conexion")}
+$("#go").onclick=async()=>{const nm=$("#nm").value.trim(),tl=$("#tl").value.trim();
+if(!nm||tl.replace(/\D/g,"").length<9){$("#er").textContent="Escribe tu nombre y un teléfono válido.";return}
+$("#er").textContent="";const t=draw().t,o={nombre:nm,telefono:tl,hora:$("#hr").value,notas:$("#nt").value.trim(),total:t,lineas:Object.keys(cart).map(k=>({producto:row(k).nm,cantidad:cart[k],precio:row(k).p}))};
+$("#go").disabled=true;
+try{await enviarPedido(o)}catch(x){$("#er").textContent="No se pudo enviar el pedido. Revisa tu conexión e inténtalo de nuevo.";$("#go").disabled=false;return}
+$("#go").disabled=false;cart={};draw();
+$("#ok").innerHTML=`<div class="hd"><h2>¡Pedido enviado!</h2><button class="x" id="c2" aria-label="Cerrar">×</button></div><p><b>${nm}</b> · ${tl}${o.hora?"<br>Recogida: "+o.hora:""}</p>`+o.lineas.map(l=>`<div class="ln"><span>${l.cantidad} × ${l.producto}</span><b>${f(l.cantidad*l.precio)}</b></div>`).join("")+`<div class="tot"><span>Subtotal (sin IVA)</span><span>${f(t)}</span></div>${o.notas?"<p class='note'>Notas: "+o.notas.replace(/</g,"&lt;")+"</p>":""}<p class='note'>El local ya recibió tu pedido. Pagas al recoger.</p><button class="pri sec" id="bk">Cerrar</button>`;
+show(0);$("#c2").onclick=$("#bk").onclick=()=>$("#sh").classList.remove("show")};
+draw();
+</script>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const db=getFirestore(initializeApp({apiKey:"AIzaSyCJ21gGWUQcuBCUe2nYCCOVoQzM3i0u3nk",authDomain:"ikea-import.firebaseapp.com",projectId:"ikea-import",storageBucket:"ikea-import.firebasestorage.app",messagingSenderId:"71448129440",appId:"1:71448129440:web:34df25354b91d0cf3efec5"}));
+window.enviarPedido=o=>addDoc(collection(db,"pedidos"),{nombre:o.nombre,telefono:o.telefono,hora:o.hora,notas:o.notas,total:o.total,lineas:o.lineas,estado:"nuevo",creado:serverTimestamp()});
+</script></body></html>
